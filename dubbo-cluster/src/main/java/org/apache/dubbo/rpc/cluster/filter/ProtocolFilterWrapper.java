@@ -40,7 +40,7 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private final Protocol protocol;
 
-    public ProtocolFilterWrapper(Protocol protocol) {
+    public ProtocolFilterWrapper(Protocol protocol) {//只有一个构造函数且参数类型为自身，则为包装类
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");
         }

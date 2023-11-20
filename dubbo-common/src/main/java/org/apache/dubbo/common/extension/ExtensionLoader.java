@@ -825,10 +825,10 @@ public class ExtensionLoader<T> {
                         Wrapper wrapper = wrapperClass.getAnnotation(Wrapper.class);
                         boolean match = (wrapper == null) || ((ArrayUtils.isEmpty(
                             wrapper.matches()) || ArrayUtils.contains(wrapper.matches(),
-                            name)) && !ArrayUtils.contains(wrapper.mismatches(), name));// 判断切入点是否匹配
+                            name)) && !ArrayUtils.contains(wrapper.mismatches(), name));// 判断包装类是否匹配
                         if (match) {
                             /*
-                            * 切入逻辑：
+                            * 包装逻辑：
                             * 把被包装对象作为参数传入包装类，创建包装类的实例
                             * 再调用包装类的setter方法
                             * */
@@ -1271,7 +1271,7 @@ public class ExtensionLoader<T> {
         // 带@Adaptive注解，更新cachedAdaptiveClass，自适应注解会用到
         if (clazz.isAnnotationPresent(Adaptive.class)) {
             cacheAdaptiveClass(clazz, overridden);
-        } else if (isWrapperClass(clazz)) {// 包装类：构造函数只有一个参数，参数类型为自身
+        } else if (isWrapperClass(clazz)) {// 判定包装类
             cacheWrapperClass(clazz);
         } else {
             if (StringUtils.isEmpty(name)) {
@@ -1393,7 +1393,7 @@ public class ExtensionLoader<T> {
      * <p>
      * which has Constructor with given class type as its only argument
      */
-    protected boolean isWrapperClass(Class<?> clazz) {
+    protected boolean isWrapperClass(Class<?> clazz) {// 判定某个类（clazz）是否为目标类（type）包装类 - 只有一个构造函数且参数类型是目标类
         Constructor<?>[] constructors = clazz.getConstructors();
         for (Constructor<?> constructor : constructors) {
             if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0] == type) {

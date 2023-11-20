@@ -330,7 +330,7 @@ public class RegistryProtocol implements Protocol, ScopeModelAware {
         String registryUrlKey = getRegistryUrlKey(originInvoker);
         Invoker<?> invokerDelegate = new InvokerDelegate<>(originInvoker, providerUrl);
 
-        ReferenceCountExporter<?> exporter = exporterFactory.createExporter(providerUrlKey, () -> protocol.export(invokerDelegate));
+        ReferenceCountExporter<?> exporter = exporterFactory.createExporter(providerUrlKey, () -> protocol.export(invokerDelegate));// 创建DubboExporter
         return (ExporterChangeableWrapper<T>) bounds.computeIfAbsent(providerUrlKey, _k -> new ConcurrentHashMap<>())
             .computeIfAbsent(registryUrlKey, s -> {
                 return new ExporterChangeableWrapper<>(

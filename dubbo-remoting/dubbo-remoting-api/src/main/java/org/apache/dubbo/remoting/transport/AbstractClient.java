@@ -63,7 +63,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         initExecutor(url);
 
         try {
-            doOpen();
+            doOpen();// 注册NettyHandler，用于定义如何处理远程发来的数据
         } catch (Throwable t) {
             close();
             throw new RemotingException(url.toInetSocketAddress(), null,

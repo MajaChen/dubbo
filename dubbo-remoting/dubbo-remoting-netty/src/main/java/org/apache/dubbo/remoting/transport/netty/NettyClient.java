@@ -72,7 +72,7 @@ public class NettyClient extends AbstractClient {
         bootstrap.setOption("keepAlive", true);
         bootstrap.setOption("tcpNoDelay", true);
         bootstrap.setOption("connectTimeoutMillis", getConnectTimeout());
-        final NettyHandler nettyHandler = new NettyHandler(getUrl(), this);
+        final NettyHandler nettyHandler = new NettyHandler(getUrl(), this);// 创建NettyHandler
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() {
@@ -80,7 +80,7 @@ public class NettyClient extends AbstractClient {
                 ChannelPipeline pipeline = Channels.pipeline();
                 pipeline.addLast("decoder", adapter.getDecoder());
                 pipeline.addLast("encoder", adapter.getEncoder());
-                pipeline.addLast("handler", nettyHandler);
+                pipeline.addLast("handler", nettyHandler);// 注册NettyHandler
                 return pipeline;
             }
         });

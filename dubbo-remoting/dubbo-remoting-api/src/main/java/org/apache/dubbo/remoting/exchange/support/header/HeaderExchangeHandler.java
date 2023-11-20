@@ -108,7 +108,7 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
         Object msg = req.getData();
         try {
             CompletionStage<Object> future = handler.reply(channel, msg);// 调用handler.reply方法，对应DubboProtocol匿名内部类的reply方法
-            future.whenComplete((appResult, t) -> {// 等请求完成之后把响应结果发送回去
+            future.whenComplete((appResult, t) -> {// 等请求完成之后把响应结果发送回去 - consumer侧的同步和异步
                 try {
                     if (t == null) {
                         res.setStatus(Response.OK);
