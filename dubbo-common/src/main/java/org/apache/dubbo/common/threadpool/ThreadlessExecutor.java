@@ -53,7 +53,7 @@ public class ThreadlessExecutor extends AbstractExecutorService {
      * Waits until there is a task, executes the task and all queued tasks (if there're any). The task is either a normal
      * response or a timeout response.
      */
-    public void waitAndDrain(long deadline) throws InterruptedException {
+    public void waitAndDrain(long deadline) throws InterruptedException {// 等待指定的时间后执行这个任务，这个任务要么是一个正常任务：设定DefaultFuture，要么是一个超时的消息
         throwIfInterrupted();
         Runnable runnable = queue.poll();
         if (runnable == null) {

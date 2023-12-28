@@ -179,7 +179,7 @@ public class AsyncRpcResult implements Result {
      * @throws ExecutionException
      */
     @Override
-    public Result get() throws InterruptedException, ExecutionException {
+    public Result get() throws InterruptedException, ExecutionException {//
         if (executor instanceof ThreadlessExecutor) {
             ThreadlessExecutor threadlessExecutor = (ThreadlessExecutor) executor;
             try {
@@ -194,15 +194,15 @@ public class AsyncRpcResult implements Result {
     }
 
     @Override
-    public Result get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public Result get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {// 获取调用结果，会调用park方法阻塞当前线程timeout的时间，之后检查
         long deadline = System.nanoTime() + unit.toNanos(timeout);
-        if (executor instanceof ThreadlessExecutor) {
+        if (executor instanceof ThreadlessExecutor) {// 同步调用的场景，在ThreadlessExecutor上进行等待，为什么不直接在future上等待呢？
             ThreadlessExecutor threadlessExecutor = (ThreadlessExecutor) executor;
             try {
                 while (!responseFuture.isDone() && !threadlessExecutor.isShutdown()) {
                     long restTime = deadline - System.nanoTime();
                     if (restTime > 0) {
-                        threadlessExecutor.waitAndDrain(deadline);
+                        threadlessExecutor.waitAndDrain(deadline);// 等待deadline时长，如果threadlessExecutor收到了任务，则在本线程内执行该任务：会设置future
                     } else {
                         throw new TimeoutException("Timeout after " + unit.toMillis(timeout) + "ms waiting for result.");
                     }
@@ -215,7 +215,7 @@ public class AsyncRpcResult implements Result {
         if (!responseFuture.isDone() && restTime < 0) {
             throw new TimeoutException("Timeout after " + unit.toMillis(timeout) + "ms waiting for result.");
         }
-        return responseFuture.get(restTime, TimeUnit.NANOSECONDS);
+        return responseFuture.get(restTime, TimeUnit.NANOSECONDS);// responseFuture一定设置了结果
     }
 
     @Override

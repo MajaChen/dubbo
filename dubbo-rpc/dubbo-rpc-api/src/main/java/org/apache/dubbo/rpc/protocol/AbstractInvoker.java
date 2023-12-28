@@ -172,7 +172,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
     }
 
     @Override
-    public Result invoke(Invocation inv) throws RpcException {// 发起调用（暂时不追究是从哪里发起的）
+    public Result invoke(Invocation inv) throws RpcException {// 发起调用
         // if invoker is destroyed due to address refresh from registry, let's allow the current invoke to proceed
         if (isDestroyed()) {
             logger.warn(PROTOCOL_FAILED_REQUEST, "", "", "Invoker for service " + this + " on consumer " + NetUtils.getLocalHost() + " is destroyed, " + ", dubbo version is " + Version.getVersion() + ", this invoker should not be used any longer");
@@ -187,7 +187,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
         AsyncRpcResult asyncResult = doInvokeAndReturn(invocation);// 发起调用，得调用结果
 
         // wait rpc result if sync
-        waitForResultIfSync(asyncResult, invocation);// 如果是同步调用，等待响应结果返回
+        waitForResultIfSync(asyncResult, invocation);// 如果是同步调用，则阻塞线程等待响应结果返回；异步调用直接返回result
 
         return asyncResult;
     }
@@ -271,7 +271,7 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
         return asyncResult;
     }
 
-    private void waitForResultIfSync(AsyncRpcResult asyncResult, RpcInvocation invocation) {
+    private void waitForResultIfSync(AsyncRpcResult asyncResult, RpcInvocation invocation) {// 如果是同步调用则等待调用结果返回
         if (InvokeMode.SYNC != invocation.getInvokeMode()) {
             return;
         }

@@ -126,14 +126,23 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 return AsyncRpcResult.newDefaultAsyncResult(invocation);
             } else {// 有返回结果的调用，区分同步和异步是在外层AbstractInvoker中完成的
                 request.setTwoWay(true);
-                ExecutorService executor = getCallbackExecutor(getUrl(), inv);// 获取服务关联的线程池，consumer侧共用一个线程池，为什么要用executor?
+                /*
+                * 获取服务关联的线程池，consumer侧共用一个线程池
+                * 如果是同步调用，则是新建的ThreadlessExecutor
+                * 如果是异步调用，则是普通的、共用的线程池
+                * 为什么要用executor?
+                * executor会设置到DefaultFuture，进而被AllChannelHandler使用，用来设置结果 - 根据responseId关联特定的future并唤醒对应的调用线程
+                *
+                * 为什么要用ThreadlessExecutor而不直接用普通的线程池呢?
+                * */
+                ExecutorService executor = getCallbackExecutor(getUrl(), inv);
                 CompletableFuture<AppResponse> appResponseFuture =
-                    currentClient.request(request, timeout, executor).thenApply(AppResponse.class::cast);// 调用request方法并在收到响应后将结果映射成AppResponse - 这是ExchangeChannel的方法，ExchangeClient集成ExchangeChannel
+                    currentClient.request(request, timeout, executor).thenApply(AppResponse.class::cast);// 调用request方法并在收到响应后将结果映射成AppResponse，此方法会立即返回 - 这是ExchangeChannel的方法，ExchangeClient集成ExchangeChannel
                 // save for 2.6.x compatibility, for example, TraceFilter in Zipkin uses com.alibaba.xxx.FutureAdapter
                 if (setFutureWhenSync || ((RpcInvocation) invocation).getInvokeMode() != InvokeMode.SYNC) {
                     FutureContext.getContext().setCompatibleFuture(appResponseFuture);
                 }
-                AsyncRpcResult result = new AsyncRpcResult(appResponseFuture, inv);// AsyncRpcResult能够兼容同步和异步调用
+                AsyncRpcResult result = new AsyncRpcResult(appResponseFuture, inv);// 将future包装进result，AsyncRpcResult能够兼容同步和异步调用
                 result.setExecutor(executor);
                 return result;
             }
