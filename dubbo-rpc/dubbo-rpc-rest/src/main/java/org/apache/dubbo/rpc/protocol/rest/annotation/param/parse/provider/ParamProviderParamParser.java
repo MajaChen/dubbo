@@ -19,9 +19,11 @@ package org.apache.dubbo.rpc.protocol.rest.annotation.param.parse.provider;
 
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.protocol.rest.constans.RestConstant;
+import org.apache.dubbo.rpc.protocol.rest.exception.ParamParseException;
 import org.apache.dubbo.rpc.protocol.rest.request.RequestFacade;
 import org.apache.dubbo.metadata.rest.ArgInfo;
 import org.apache.dubbo.metadata.rest.ParamType;
+import org.apache.dubbo.rpc.protocol.rest.util.DataParseUtils;
 
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -35,27 +37,28 @@ public class ParamProviderParamParser extends ProviderParamParser {
     @Override
     protected void doParse(ProviderParseContext parseContext, ArgInfo argInfo) {
 
-        //TODO MAP<String,String> convert
-        RequestFacade request = parseContext.getRequestFacade();
-
-        if (Map.class.isAssignableFrom(argInfo.getParamType())) {
-
-            Map<String, String> paramMap = new LinkedHashMap<>();
-            Enumeration<String> parameterNames = request.getParameterNames();
-
-            while (parameterNames.hasMoreElements()) {
-                String name = parameterNames.nextElement();
-                paramMap.put(name, request.getParameter(name));
+        try {
+            //TODO MAP<String,String> convert
+            RequestFacade request = parseContext.getRequestFacade();
+            
+            if (Map.class.isAssignableFrom(argInfo.getParamType())) {
+                Map<String, String> paramMap = new LinkedHashMap<>();
+                Enumeration<String> parameterNames = request.getParameterNames();
+                
+                while (parameterNames.hasMoreElements()) {
+                    String name = parameterNames.nextElement();
+                    paramMap.put(name, DataParseUtils.codecConvert(request.getParameter(name)));
+                }
+                parseContext.setValueByIndex(argInfo.getIndex(), paramMap);
+                return;
             }
-            parseContext.setValueByIndex(argInfo.getIndex(), paramMap);
-            return;
-
+            String param = DataParseUtils.codecConvert(request.getParameter(argInfo.getAnnotationNameAttribute()));
+            
+            Object paramValue = paramTypeConvert(argInfo.getParamType(), param);
+            parseContext.setValueByIndex(argInfo.getIndex(), paramValue);
+        } catch (Exception e) {
+            throw new ParamParseException("dubbo rest protocol provider body param parser  error: " + e.getMessage());
         }
-
-        String param = request.getParameter(argInfo.getAnnotationNameAttribute());
-
-        Object paramValue = paramTypeConvert(argInfo.getParamType(), param);
-        parseContext.setValueByIndex(argInfo.getIndex(), paramValue);
     }
 
     @Override

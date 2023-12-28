@@ -155,7 +155,10 @@ public class DataParseUtils {
     public static Object jsonConvert(Type targetType, byte[] body) throws Exception {
         return JsonUtils.toJavaObject(new String(body, StandardCharsets.UTF_8), targetType);
     }
-
+    
+    public static String codecConvert(String old)  throws Exception {
+        return URLDecoder.decode(old, StandardCharsets.UTF_8.toString());
+    }
 
     public static Object multipartFormConvert(byte[] body, Charset charset, Class<?> targetType) throws Exception {
         String[] pairs = tokenizeToStringArray(new String(body, StandardCharsets.UTF_8), "&");
