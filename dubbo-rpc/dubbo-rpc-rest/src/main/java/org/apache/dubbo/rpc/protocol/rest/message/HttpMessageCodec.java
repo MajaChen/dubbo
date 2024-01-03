@@ -25,6 +25,9 @@ import org.apache.dubbo.metadata.rest.media.MediaType;
  *  for http body codec
  * @param <InputStream>
  * @param <OutputStream>
+ *
+ * HttpMessageCodec，对应 http header中的 content-type 字段，实现类有：ByteArray,Json,MultiValue,String,Text,XML
+ * 既用于对 http 请求 body 字段的解码，又用于对 http 响应内容的编码
  */
 @SPI(scope = ExtensionScope.FRAMEWORK)
 public interface HttpMessageCodec<InputStream, OutputStream> extends HttpMessageDecode<InputStream>, HttpMessageEncode<OutputStream> {

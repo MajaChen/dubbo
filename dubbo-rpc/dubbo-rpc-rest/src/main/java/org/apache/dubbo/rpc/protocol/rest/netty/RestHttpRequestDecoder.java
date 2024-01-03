@@ -37,7 +37,8 @@ import org.apache.dubbo.rpc.protocol.rest.request.NettyRequestFacade;
 
 import static org.apache.dubbo.config.Constants.SERVER_THREAD_POOL_NAME;
 
-
+// 对rest http请求进行解码，在NettyHttpRestServer中被调用，用于解码
+// MessageToMessageDecoder属于netty规范，本质上是一个ChannelInboundHandlerAdapter
 public class RestHttpRequestDecoder extends MessageToMessageDecoder<io.netty.handler.codec.http.FullHttpRequest> {
     private final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(getClass());
 
@@ -56,6 +57,7 @@ public class RestHttpRequestDecoder extends MessageToMessageDecoder<io.netty.han
     }
 
 
+    // 解码rest http请求，但是并没有进行任何解码，而是将请求封装成requestFacade，调用nettyHttpHandler进行处理 - 可能这里的设计思想是：在decode请求的过程中处理请求
     @Override
     protected void decode(ChannelHandlerContext ctx, io.netty.handler.codec.http.FullHttpRequest request, List<Object> out) throws Exception {
         boolean keepAlive = HttpHeaders.isKeepAlive(request);
@@ -63,7 +65,7 @@ public class RestHttpRequestDecoder extends MessageToMessageDecoder<io.netty.han
         NettyHttpResponse nettyHttpResponse = new NettyHttpResponse(ctx, keepAlive,url);
         NettyRequestFacade requestFacade = new NettyRequestFacade(request, ctx,serviceDeployer);
 
-        executor.execute(() -> {
+        executor.execute(() -> {// "解码动作"是放在executor中的，所谓的解码实际上会处理http请求
 
             // business handler
             try {

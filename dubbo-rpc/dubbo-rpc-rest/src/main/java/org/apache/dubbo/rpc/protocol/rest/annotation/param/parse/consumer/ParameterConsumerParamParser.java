@@ -27,7 +27,7 @@ import java.util.Map;
 @Activate("consumer-parameter")
 public class ParameterConsumerParamParser implements BaseConsumerParamParser {
     @Override
-    public void parse(ConsumerParseContext parseContext, ArgInfo argInfo) {
+    public void parse(ConsumerParseContext parseContext, ArgInfo argInfo) {// 将 dubbo 入参传入 http 模板中，这里是作为 http param 传入
         List<Object> args = parseContext.getArgs();
 
         RequestTemplate requestTemplate = parseContext.getRequestTemplate();
@@ -37,17 +37,14 @@ public class ParameterConsumerParamParser implements BaseConsumerParamParser {
         if (paramValue == null) {
             return;
         }
-
-
-        if (Map.class.isAssignableFrom(argInfo.getParamType())) {
+        
+        if (Map.class.isAssignableFrom(argInfo.getParamType())) {// 如果是Map类型
             Map paramValues = (Map) paramValue;
             for (Object name : paramValues.keySet()) {
-                requestTemplate.addParam(String.valueOf(name), paramValues.get(name));
+                requestTemplate.addParam(String.valueOf(name), paramValues.get(name));// 将 Map 中的每个 kv 加入 param 中
             }
         } else {
             requestTemplate.addParam(argInfo.getAnnotationNameAttribute(), paramValue);
-
-
         }
 
     }

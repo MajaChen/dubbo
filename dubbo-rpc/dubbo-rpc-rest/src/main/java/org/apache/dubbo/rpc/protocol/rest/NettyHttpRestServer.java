@@ -124,9 +124,9 @@ public class NettyHttpRestServer implements RestProtocolServer {
                     new HttpRequestDecoder(
                         url.getParameter(RestConstant.MAX_INITIAL_LINE_LENGTH_PARAM, RestConstant.MAX_INITIAL_LINE_LENGTH),
                         url.getParameter(RestConstant.MAX_HEADER_SIZE_PARAM, RestConstant.MAX_HEADER_SIZE),
-                        url.getParameter(RestConstant.MAX_CHUNK_SIZE_PARAM, RestConstant.MAX_CHUNK_SIZE)),
+                        url.getParameter(RestConstant.MAX_CHUNK_SIZE_PARAM, RestConstant.MAX_CHUNK_SIZE)),// HttpRequestDecoder解码http请求，是netty原生的解码动作，先执行
                     new HttpObjectAggregator(url.getParameter(RestConstant.MAX_REQUEST_SIZE_PARAM, RestConstant.MAX_REQUEST_SIZE)),
-                    new HttpResponseEncoder(), new RestHttpRequestDecoder(url, serviceDeployer))
+                    new HttpResponseEncoder(), new RestHttpRequestDecoder(url, serviceDeployer))// RestHttpRequestDecoder解码方式，是用户自定义的解码动作，后执行
                     ;
             }
         };

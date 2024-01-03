@@ -72,7 +72,7 @@ public class RestProtocol extends AbstractProtocol {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {
+    public <T> Exporter<T> export(final Invoker<T> invoker) throws RpcException {// 暴露服务引用
         URL url = invoker.getUrl();
         final String uri = serviceKey(url);
         Exporter<T> exporter = (Exporter<T>) exporterMap.get(uri);
@@ -136,7 +136,7 @@ public class RestProtocol extends AbstractProtocol {
 
         // resolve metadata
         ServiceRestMetadata serviceRestMetadata =
-            MetadataResolver.resolveConsumerServiceMetadata(type, url, contextPathFromUrl);
+            MetadataResolver.resolveConsumerServiceMetadata(type, url, contextPathFromUrl);// 解析 consumer 侧服务元数据
 
         Invoker<T> invoker = new RestInvoker<T>(type, url,
             refClient, httpConnectionPreBuildIntercepts, serviceRestMetadata);

@@ -25,10 +25,10 @@ import static org.apache.dubbo.rpc.protocol.rest.filter.ServiceInvokeRestFilter.
  * default RestResponseInterceptor
  */
 @Activate(value = "invoke", order = Integer.MAX_VALUE)
-public class ServiceInvokeRestResponseInterceptor implements RestResponseInterceptor {
+public class ServiceInvokeRestResponseInterceptor implements RestResponseInterceptor {// 写回响应
 
     @Override
-    public void intercept(RestInterceptContext restInterceptContext) throws Exception {
+    public void intercept(RestInterceptContext restInterceptContext) throws Exception {// 对响应进行编码
 
         writeResult(restInterceptContext.getResponse(), restInterceptContext.getRequestFacade(), restInterceptContext.getUrl(), restInterceptContext.getResult(), restInterceptContext.getRpcInvocation().getReturnType());
     }

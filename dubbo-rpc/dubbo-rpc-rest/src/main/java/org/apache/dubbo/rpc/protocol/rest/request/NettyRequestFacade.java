@@ -36,6 +36,7 @@ import java.util.Map;
 
 /**
  * netty request facade
+ * NettyRequestFacade 继承自 RequestFacade，它是想把整个 http 请求中的所有信息都解析出来放到 facade 中，方便后续的处理和使用，可以类比HttpServletRequest
  */
 public class NettyRequestFacade extends RequestFacade<FullHttpRequest> {
 
@@ -50,13 +51,13 @@ public class NettyRequestFacade extends RequestFacade<FullHttpRequest> {
     }
 
     public NettyRequestFacade(Object request, ChannelHandlerContext context, ServiceDeployer serviceDeployer) {
-        super((FullHttpRequest) request, serviceDeployer);
+        super((FullHttpRequest) request, serviceDeployer);// 构造方法里面有很多操作：初始化头、初始化参数、初始化body、初始化路径
         this.context = context;
 
     }
 
 
-    protected void initHeaders() {
+    protected void initHeaders() {// 初始化头: 把 http 请求中的头部信息提取出来放入headers map中
         for (Map.Entry<String, String> header : request.headers()) {
 
             String key = header.getKey();
@@ -248,7 +249,7 @@ public class NettyRequestFacade extends RequestFacade<FullHttpRequest> {
         return body;
     }
 
-    protected void parseBody() {
+    protected void parseBody() {// 解析Body
         ByteBuf byteBuf = ((HttpContent) request).content();
 
         if (byteBuf.readableBytes() > 0) {

@@ -32,12 +32,12 @@ import java.util.Map;
  * @param <T>
  */
 public abstract class RequestFacade<T> {
-    protected Map<String, ArrayList<String>> headers = new HashMap<>();
-    protected Map<String, ArrayList<String>> parameters = new HashMap<>();
+    protected Map<String, ArrayList<String>> headers = new HashMap<>();// http 头
+    protected Map<String, ArrayList<String>> parameters = new HashMap<>();// http 参数
 
-    protected String path;
-    protected T request;
-    protected byte[] body = new byte[0];
+    protected String path;// 请求路径
+    protected T request;// 请求本身
+    protected byte[] body = new byte[0];// 请求body
     protected ServiceDeployer serviceDeployer;
 
     public RequestFacade(T request) {
@@ -57,10 +57,10 @@ public abstract class RequestFacade<T> {
     }
 
 
-    protected void initParameters() {
+    protected void initParameters() {// 初始化参数：把 http 请求中的头部信息提取出来放入parameters map中，同时初始化path
         String requestURI = getRequestURI();
 
-        if (requestURI != null && requestURI.contains("?")) {
+        if (requestURI != null && requestURI.contains("?")) {// 表明uri中存在参数，则既初始化parameters又初始化path
 
             String queryString = requestURI.substring(requestURI.indexOf("?") + 1);
             path = requestURI.substring(0, requestURI.indexOf("?"));

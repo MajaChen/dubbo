@@ -62,7 +62,7 @@ public class RestInvoker<T> extends AbstractInvoker<T> {
     }
 
     @Override
-    protected Result doInvoke(Invocation invocation) {
+    protected Result doInvoke(Invocation invocation) {// 发起 rest http 调用
         try {
 
             Map<String, Map<ParameterTypesComparator, RestMethodMetadata>> metadataMap = serviceRestMetadata.getMethodToServiceMap();
@@ -77,7 +77,7 @@ public class RestInvoker<T> extends AbstractInvoker<T> {
 
             // fill real  data
             for (HttpConnectionPreBuildIntercept intercept : httpConnectionPreBuildIntercepts) {
-                intercept.intercept(httpConnectionCreateContext);
+                intercept.intercept(httpConnectionCreateContext);// 结合服务元数据，对http 请求模板（requestTemplate，包含在httpConnectionCreateContext中）进行填充
             }
 
             // TODO check rest client cannot be reused

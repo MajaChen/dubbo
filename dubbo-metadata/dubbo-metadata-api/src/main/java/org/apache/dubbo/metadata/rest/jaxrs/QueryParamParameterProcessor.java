@@ -25,7 +25,7 @@ import static org.apache.dubbo.metadata.rest.RestMetadataConstants.JAX_RS.QUERY_
  *
  * @since 2.7.6
  */
-public class QueryParamParameterProcessor extends ParamAnnotationParameterProcessor {
+public class QueryParamParameterProcessor extends ParamAnnotationParameterProcessor {// 用于处理QueryParam注解
 
     @Override
     public String getAnnotationName() {

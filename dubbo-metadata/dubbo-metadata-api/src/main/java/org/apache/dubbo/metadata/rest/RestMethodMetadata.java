@@ -32,16 +32,16 @@ import static java.util.Collections.emptyList;
 /**
  * The metadata class for {@link RequestMetadata HTTP(REST) request} and
  * its binding {@link MethodDefinition method definition}
- *
+ * 把方法本身和请求粘在一起
  * @since 2.7.6
  */
-public class RestMethodMetadata implements Serializable {
+public class RestMethodMetadata implements Serializable {// rest服务方法级别的服务元数据
 
     private static final long serialVersionUID = 2935252016200830694L;
 
-    private MethodDefinition method;
+    private MethodDefinition method;// 方法元数据
 
-    private RequestMetadata request;
+    private RequestMetadata request;// 请求本身
 
     private Integer urlIndex;
 

@@ -28,7 +28,7 @@ import java.util.Arrays;
  *  resolve method args  by args info
  */
 @Activate(value = "paramparse",order = 5)
-public class ParamParseIntercept implements HttpConnectionPreBuildIntercept {
+public class ParamParseIntercept implements HttpConnectionPreBuildIntercept {// 将 dubbo 中的入参填充进 http params 中
 
     @Override
     public void intercept(HttpConnectionCreateContext connectionCreateContext) {

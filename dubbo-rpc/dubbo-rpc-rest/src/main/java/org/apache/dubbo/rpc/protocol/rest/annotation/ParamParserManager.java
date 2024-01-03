@@ -46,14 +46,13 @@ public class ParamParserManager {
      * <p>
      * args=toArray(new Object[0]);
      */
-    public static Object[] providerParamParse(ProviderParseContext parseContext) {
+    public static Object[] providerParamParse(ProviderParseContext parseContext) {// provider侧解析请求中的参数
 
         List<ArgInfo> args = parseContext.getArgInfos();
 
-        for (int i = 0; i < args.size(); i++) {
-            for (ParamParser paramParser : providerParamParsers) {
-
-                paramParser.parse(parseContext, args.get(i));
+        for (int i = 0; i < args.size(); i++) {// 逐个参数进行解析
+            for (ParamParser paramParser : providerParamParsers) {// 逐个解析器解析，解析器是BaseProviderParamParser的全部实现类，body\param\header\path
+                paramParser.parse(parseContext, args.get(i));// 具体的解析逻辑，在解析的过程中会判断给定的参数类型是否匹配解析器
             }
         }
         // TODO add param require or default & body arg size pre judge
@@ -76,7 +75,7 @@ public class ParamParserManager {
         List<ArgInfo> argInfos = parseContext.getArgInfos();
 
         for (int i = 0; i < argInfos.size(); i++) {
-            for (BaseConsumerParamParser paramParser : consumerParamParsers) {
+            for (BaseConsumerParamParser paramParser : consumerParamParsers) {// 在 consumer 侧将 dubbo 入参传入 http 中，可以是 header、param、body、form（分别对应四种实现）
                 ArgInfo argInfoByIndex = parseContext.getArgInfoByIndex(i);
 
                 if (!paramParser.paramTypeMatch(argInfoByIndex)) {

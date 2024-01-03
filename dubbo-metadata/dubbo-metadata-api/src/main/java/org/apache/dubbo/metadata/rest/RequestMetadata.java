@@ -37,20 +37,20 @@ import static org.apache.dubbo.common.utils.StringUtils.isBlank;
 
 /**
  * The metadata class for REST request
- *
+ * 在 consumer 侧封装了 http 请求，可以类比 provider侧的 RequestFacade
  * @since 2.7.6
  */
 public class RequestMetadata implements Serializable {
 
     private static final long serialVersionUID = -240099840085329958L;
 
-    private String method;
+    private String method;// 方法名
 
-    private String path;
+    private String path;// 路径
 
-    private Map<String, List<String>> params = new LinkedHashMap<>();
+    private Map<String, List<String>> params = new LinkedHashMap<>();// 参数
 
-    private Map<String, List<String>> headers = new LinkedHashMap<>();
+    private Map<String, List<String>> headers = new LinkedHashMap<>();// 请求头
 
     private Set<String> consumes = new LinkedHashSet<>();
 

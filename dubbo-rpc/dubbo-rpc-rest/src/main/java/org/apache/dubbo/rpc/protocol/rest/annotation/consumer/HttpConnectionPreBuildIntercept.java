@@ -22,6 +22,14 @@ import org.apache.dubbo.common.extension.SPI;
 /**
  * http  request build intercept
  */
+
+/*
+*  结合服务元数据，对http 请求模板（requestTemplate，包含在httpConnectionCreateContext中）进行填充，包括
+*  将 dubbo 中的 attachment 填充进 http header；将 content-type 和 accept 字段加入 header
+*  将 dubbo 中的入参填充进 http params、http header、http body 中
+*  将 dubbo 中的入参填充进 http path 中（path variable情形）
+*  对 http body 按照 Content-type 字段进行编码
+* */
 @SPI(scope = ExtensionScope.FRAMEWORK)
 public interface HttpConnectionPreBuildIntercept {
     void intercept(HttpConnectionCreateContext connectionCreateContext);

@@ -32,7 +32,7 @@ import java.util.Set;
  *
  * @since 2.7.6
  */
-public class ServiceRestMetadata implements Serializable {
+public class ServiceRestMetadata implements Serializable {// rest 服务的服务元数据
 
     private static final long serialVersionUID = -4549723140727443569L;
 

@@ -47,6 +47,7 @@ public class HttpMessageCodecManager {
     public static MessageCodecResultPair httpMessageEncode(OutputStream outputStream, Object unSerializedBody, URL url, MediaType mediaType, Class<?> bodyType) throws Exception {
 
 
+        // 对应的是 consumer 端的情形
         if (unSerializedBody == null) {
             for (HttpMessageCodec httpMessageCodec : httpMessageCodecs) {
                 if (httpMessageCodec.contentTypeSupport(mediaType, bodyType) || typeJudge(mediaType, bodyType, httpMessageCodec)) {
@@ -55,9 +56,10 @@ public class HttpMessageCodecManager {
             }
         }
 
+        // 对应的是 provider 端的情形
         for (HttpMessageCodec httpMessageCodec : httpMessageCodecs) {
             if (httpMessageCodec.contentTypeSupport(mediaType, bodyType) || typeJudge(mediaType, bodyType, httpMessageCodec)) {
-                httpMessageCodec.encode(outputStream, unSerializedBody, url);
+                httpMessageCodec.encode(outputStream, unSerializedBody, url);// 根据content-type对响应内容进行编码
                 return MessageCodecResultPair.pair(true, httpMessageCodec.contentType());
             }
         }

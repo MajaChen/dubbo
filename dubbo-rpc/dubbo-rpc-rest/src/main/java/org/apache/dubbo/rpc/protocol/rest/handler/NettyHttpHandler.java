@@ -58,19 +58,19 @@ public class NettyHttpHandler implements HttpHandler<NettyRequestFacade, NettyHt
 
 
     @Override
-    public void handle(NettyRequestFacade requestFacade, NettyHttpResponse nettyHttpResponse) throws IOException {
+    public void handle(NettyRequestFacade requestFacade, NettyHttpResponse nettyHttpResponse) throws IOException {// 处理 rest http 请求到ServiceContext
 
         // set remote address
-        RpcContext.getServiceContext().setRemoteAddress(requestFacade.getRemoteAddr(), requestFacade.getRemotePort());
+        RpcContext.getServiceContext().setRemoteAddress(requestFacade.getRemoteAddr(), requestFacade.getRemotePort());// 设置远程地址到ServiceContext
 
         // set local address
-        RpcContext.getServiceContext().setLocalAddress(requestFacade.getLocalAddr(), requestFacade.getLocalPort());
+        RpcContext.getServiceContext().setLocalAddress(requestFacade.getLocalAddr(), requestFacade.getLocalPort());// 设置本地地址到ServiceContext
 
         // set request
-        RpcContext.getServiceContext().setRequest(requestFacade);
+        RpcContext.getServiceContext().setRequest(requestFacade);// 设置请求到ServiceContext
 
         // set response
-        RpcContext.getServiceContext().setResponse(nettyHttpResponse);
+        RpcContext.getServiceContext().setResponse(nettyHttpResponse);// 设置响应到ServiceContext
 
         Object nettyHttpRequest = requestFacade.getRequest();
 
@@ -79,7 +79,7 @@ public class NettyHttpHandler implements HttpHandler<NettyRequestFacade, NettyHt
         try {
 
             // first request filter
-            executeFilters(restFilterContext, restRequestFilters);
+            executeFilters(restFilterContext, restRequestFilters);// 首先执行过滤器，对请求进行过滤，有两个过滤器：ServiceInvokeRestFilter和ResteasyRequestContainerFilterAdapter，在过滤器中国会完成处理
 
         } catch (PathNoFoundException pathNoFoundException) {
             logger.error("", pathNoFoundException.getMessage(), "", "dubbo rest protocol provider path   no found ,raw request is :" + nettyHttpRequest, pathNoFoundException);

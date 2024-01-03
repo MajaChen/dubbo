@@ -35,14 +35,15 @@ public class MetadataResolver {
      * @return rest metadata
      * @throws CodeStyleNotSupportException not support type
      */
-    public static ServiceRestMetadata resolveConsumerServiceMetadata(Class<?> targetClass, URL url, String contextPathFromUrl) {
+    // 解析consumer侧的服务元数据
+    public static ServiceRestMetadata resolveConsumerServiceMetadata(Class<?> targetClass, URL url, String contextPathFromUrl) {// 解析服务侧的服务元数据
         ExtensionLoader<ServiceRestMetadataResolver> extensionLoader = url.getOrDefaultApplicationModel().getExtensionLoader(ServiceRestMetadataResolver.class);
-
+        // 获取ServiceRestMetadataResolver的全部实现类
         for (ServiceRestMetadataResolver serviceRestMetadataResolver : extensionLoader.getSupportedExtensionInstances()) {
-            if (serviceRestMetadataResolver.supports(targetClass, true)) {
+            if (serviceRestMetadataResolver.supports(targetClass, true)) {// jax-rss判断Path是否存在
                 ServiceRestMetadata serviceRestMetadata = new ServiceRestMetadata(url.getServiceInterface(), url.getVersion(), url.getGroup(), true);
                 serviceRestMetadata.setContextPathFromUrl(contextPathFromUrl);
-                ServiceRestMetadata resolve = serviceRestMetadataResolver.resolve(targetClass, serviceRestMetadata);
+                ServiceRestMetadata resolve = serviceRestMetadataResolver.resolve(targetClass, serviceRestMetadata);// 解析服务元数据，重点解析其中的方法
                 return resolve;
             }
         }
@@ -51,7 +52,7 @@ public class MetadataResolver {
         throw new CodeStyleNotSupportException("service is: " + targetClass + ", only support " + extensionLoader.getSupportedExtensions() + " annotation");
     }
 
-
+    // 解析provider侧的服务元数据，基本逻辑同resolveConsumerServiceMetadata，区别在于supports方法
     public static ServiceRestMetadata resolveProviderServiceMetadata(Class serviceImpl, URL url, String contextPathFromUrl) {
         ExtensionLoader<ServiceRestMetadataResolver> extensionLoader = url.getOrDefaultApplicationModel().getExtensionLoader(ServiceRestMetadataResolver.class);
 

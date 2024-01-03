@@ -115,7 +115,7 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
 
         ExecutableElement restCapableMethod = findRestCapableMethod(processingEnv, serviceType, serviceInterfaceType, serviceMethod);
 
-        if (restCapableMethod == null) { // if can't be found
+        if (restCapableMethod == null) { // if found
             return empty();
         }
 

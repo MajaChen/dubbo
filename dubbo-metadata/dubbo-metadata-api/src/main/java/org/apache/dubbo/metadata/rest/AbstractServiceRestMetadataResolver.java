@@ -120,7 +120,7 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
 
 
     @Override
-    public final ServiceRestMetadata resolve(Class<?> serviceType, ServiceRestMetadata serviceRestMetadata) {
+    public final ServiceRestMetadata resolve(Class<?> serviceType, ServiceRestMetadata serviceRestMetadata) {// 解析服务元数据，重点解析其中的方法
         serviceRestMetadata.setCodeStyle(this.getClass());
         // Process RestMethodMetadata
         processAllRestMethodMetadata(serviceRestMetadata, serviceType);
@@ -152,9 +152,9 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
      * @param serviceRestMetadata {@link ServiceRestMetadata}
      * @param serviceType         Dubbo Service interface or type
      */
-    protected void processAllRestMethodMetadata(ServiceRestMetadata serviceRestMetadata, Class<?> serviceType) {
+    protected void processAllRestMethodMetadata(ServiceRestMetadata serviceRestMetadata, Class<?> serviceType) {// 解析服务元数据，重点解析其中的方法
         Class<?> serviceInterfaceClass = resolveServiceInterfaceClass(serviceRestMetadata, serviceType);
-        Map<Method, Method> serviceMethodsMap = resolveServiceMethodsMap(serviceType, serviceInterfaceClass);
+        Map<Method, Method> serviceMethodsMap = resolveServiceMethodsMap(serviceType, serviceInterfaceClass);// 搜索全部方法得到一个Map结构
         for (Map.Entry<Method, Method> entry : serviceMethodsMap.entrySet()) {
             // try the overrider method first
             Method serviceMethod = entry.getKey();
@@ -162,7 +162,7 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
             if (!processRestMethodMetadata(serviceMethod, serviceType, serviceInterfaceClass, serviceRestMetadata::addRestMethodMetadata, serviceRestMetadata)) {
                 Method declaredServiceMethod = entry.getValue();
                 processRestMethodMetadata(declaredServiceMethod, serviceType, serviceInterfaceClass,
-                    serviceRestMetadata::addRestMethodMetadata, serviceRestMetadata);
+                    serviceRestMetadata::addRestMethodMetadata, serviceRestMetadata);// 解析方法上的服务元数据
             }
         }
     }
@@ -251,7 +251,7 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
     protected boolean processRestMethodMetadata(Method serviceMethod, Class<?> serviceType,
                                                 Class<?> serviceInterfaceClass,
                                                 Consumer<RestMethodMetadata> metadataToProcess,
-                                                ServiceRestMetadata serviceRestMetadata) {
+                                                ServiceRestMetadata serviceRestMetadata) {// 解析方法上的服务元数据
 
         if (!isRestCapableMethod(serviceMethod, serviceType, serviceInterfaceClass)) {
             return false;
@@ -296,7 +296,7 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
         request.setProduces(produces);
         request.setConsumes(consumes);
 
-        // process the annotated method parameters
+        // process the annotated method parameters - 解析带注解的方法参数
         processAnnotatedMethodParameters(serviceMethod, serviceType, serviceInterfaceClass, metadata);
 
 
@@ -358,14 +358,14 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
     }
 
     private void processAnnotatedMethodParameters(Method serviceMethod, Class<?> serviceType,
-                                                  Class<?> serviceInterfaceClass, RestMethodMetadata metadata) {
+                                                  Class<?> serviceInterfaceClass, RestMethodMetadata metadata) {// 解析带注解的方法参数
         int paramCount = serviceMethod.getParameterCount();
         Parameter[] parameters = serviceMethod.getParameters();
         for (int i = 0; i < paramCount; i++) {
             Parameter parameter = parameters[i];
             // Add indexed parameter name
             metadata.addIndexToName(i, parameter.getName());
-            processAnnotatedMethodParameter(parameter, i, serviceMethod, serviceType, serviceInterfaceClass, metadata);
+            processAnnotatedMethodParameter(parameter, i, serviceMethod, serviceType, serviceInterfaceClass, metadata);// 逐个参数进行解析
         }
     }
 
@@ -385,9 +385,9 @@ public abstract class AbstractServiceRestMetadataResolver implements ServiceRest
 
         }
 
-        for (Annotation annotation : annotations) {
+        for (Annotation annotation : annotations) {// 逐个解析参数上的注解
             String annotationType = annotation.annotationType().getName();
-            parameterProcessorsMap.getOrDefault(annotationType, emptyList())
+            parameterProcessorsMap.getOrDefault(annotationType, emptyList())// 逐个使用解析器
                 .forEach(processor -> {
                     processor.process(annotation, parameter, parameterIndex, serviceMethod, serviceType,
                         serviceInterfaceClass, metadata);

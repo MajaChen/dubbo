@@ -52,11 +52,11 @@ public class RestRPCInvocationUtil {
      */
     public static void parseMethodArgs(RpcInvocation rpcInvocation, RequestFacade request, Object servletRequest,
                                        Object servletResponse,
-                                       RestMethodMetadata restMethodMetadata) {
+                                       RestMethodMetadata restMethodMetadata) {// 将 http 请求重新转换成 dubbo 调用的入参
 
         try {
             ProviderParseContext parseContext = createParseContext(request, servletRequest, servletResponse, restMethodMetadata);
-            Object[] args = ParamParserManager.providerParamParse(parseContext);
+            Object[] args = ParamParserManager.providerParamParse(parseContext);// 解析请求中的args
 
             List<ArgInfo> argInfos = parseContext.getArgInfos();
 

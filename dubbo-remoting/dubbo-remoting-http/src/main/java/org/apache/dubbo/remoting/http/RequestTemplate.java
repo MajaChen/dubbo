@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+// http 请求模板，每次请求往其中填入值，包括请求参数、请求头、方法、路径、请求体
 
 public class RequestTemplate implements Serializable {
     private static final long serialVersionUID = 1L;

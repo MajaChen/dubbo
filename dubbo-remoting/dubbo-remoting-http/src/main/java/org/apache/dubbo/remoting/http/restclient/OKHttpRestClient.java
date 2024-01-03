@@ -53,6 +53,8 @@ public class OKHttpRestClient implements RestClient {
         Request.Builder builder = new Request.Builder();
         // url
         builder.url(requestTemplate.getURL());
+        
+        
 
         Map<String, Collection<String>> allHeaders = requestTemplate.getAllHeaders();
 

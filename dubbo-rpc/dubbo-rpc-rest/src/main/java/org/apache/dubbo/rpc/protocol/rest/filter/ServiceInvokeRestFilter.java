@@ -48,6 +48,7 @@ import org.apache.dubbo.rpc.protocol.rest.util.MediaTypeUtil;
 import java.util.List;
 import java.util.Objects;
 
+// 这个 filter 不是 ‘filter’，而是会完成请求的调用
 @Activate(value = "invoke", order = Integer.MAX_VALUE)
 public class ServiceInvokeRestFilter implements RestRequestFilter {
     private final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(getClass());
@@ -59,18 +60,17 @@ public class ServiceInvokeRestFilter implements RestRequestFilter {
     }
 
     @Override
-    public void filter(RestFilterContext restFilterContext) throws Exception {
+        public void filter(RestFilterContext restFilterContext) throws Exception {
         NettyRequestFacade nettyRequestFacade = (NettyRequestFacade) restFilterContext.getRequestFacade();
 
         FullHttpRequest nettyHttpRequest = nettyRequestFacade.getRequest();
 
         doHandler(nettyHttpRequest,
             restFilterContext.getResponse(),
-            restFilterContext.getRequestFacade(),
+            restFilterContext.getRequestFacade(),// 包装成 facade 的请求
             restFilterContext.getUrl(),
-            restFilterContext.getOriginRequest(),
-            restFilterContext.getServiceDeployer());
-
+            restFilterContext.getOriginRequest(),// 原始请求
+            restFilterContext.getServiceDeployer());// 在 doHandler 中完成对请求的处理
     }
 
 
@@ -79,16 +79,16 @@ public class ServiceInvokeRestFilter implements RestRequestFilter {
                            RequestFacade request,
                            URL url,
                            Object originRequest,// resteasy  request
-                           ServiceDeployer serviceDeployer) throws Exception {
+                           ServiceDeployer serviceDeployer) throws Exception {// 完成对 rest http 请求的处理
         PathMatcher pathMatcher = RestRPCInvocationUtil.createPathMatcher(request);
 
-        // path NoFound 404
+        // path NoFound 404 - 请求路径错误
         if (!serviceDeployer.hashRestMethod(pathMatcher)) {
             throw new PathNoFoundException("rest service Path no found, current path info:" + pathMatcher);
         }
 
 
-        // method disallowed
+        // method disallowed - 方法错误
         if (!serviceDeployer.isMethodAllowed(pathMatcher)) {
             nettyHttpResponse.sendError(405, "service require request method is : "
                 + serviceDeployer.pathHttpMethods(pathMatcher)
@@ -96,7 +96,7 @@ public class ServiceInvokeRestFilter implements RestRequestFilter {
             );
             return;
         }
-        // compare http method and  acquire metadata by request
+        // compare http method and  acquire metadata by request - 同时获取 Invoker 和 RestMethodMetadata
         InvokerAndRestMethodMetadataPair restMethodMetadataPair = RestRPCInvocationUtil.getRestMethodMetadataAndInvokerPair(pathMatcher.compareHttpMethod(true), serviceDeployer);
 
         Invoker invoker = restMethodMetadataPair.getInvoker();
@@ -104,19 +104,19 @@ public class ServiceInvokeRestFilter implements RestRequestFilter {
         RestMethodMetadata restMethodMetadata = restMethodMetadataPair.getRestMethodMetadata();
 
 
-        // content-type  support judge,throw unSupportException
+        // content-type  support judge,throw unSupportException - 支持content-type
         acceptSupportJudge(request, restMethodMetadata.getReflectMethod().getReturnType());
 
-        // build RpcInvocation
+        // build RpcInvocation - 构建rpc invocation
         RpcInvocation rpcInvocation = RestRPCInvocationUtil.createBaseRpcInvocation(request, restMethodMetadata);
 
-        // parse method real args
+        // parse method real args - 解析方法参数，核心
         RestRPCInvocationUtil.parseMethodArgs(rpcInvocation, request, nettyHttpRequest, nettyHttpResponse, restMethodMetadata);
 
-        // execute business  method invoke
+        // execute business  method invoke - 执行invoke
         Result result = invoker.invoke(rpcInvocation);
 
-        // set raw response
+        // set raw response - 将result设置回response中
         nettyHttpResponse.setResponseBody(result.getValue());
 
         if (result.hasException()) {
@@ -142,7 +142,7 @@ public class ServiceInvokeRestFilter implements RestRequestFilter {
             restFilterContext.setOriginRequest(originRequest);
 
             // invoke the intercept chain before Result  write to  response
-            executeResponseIntercepts(restFilterContext);
+            executeResponseIntercepts(restFilterContext);// 对 response 执行 filter，编码响应结果
         } catch (Exception exception) {
             logger.error("", exception.getMessage(), "", "dubbo rest protocol execute ResponseIntercepts error", exception);
             throw exception;
@@ -159,14 +159,14 @@ public class ServiceInvokeRestFilter implements RestRequestFilter {
      * @param returnType
      * @throws Exception
      */
-    public static void writeResult(NettyHttpResponse nettyHttpResponse, RequestFacade<?> request, URL url, Object value, Class<?> returnType) throws Exception {
-        MediaType mediaType = getAcceptMediaType(request, returnType);
+    public static void writeResult(NettyHttpResponse nettyHttpResponse, RequestFacade<?> request, URL url, Object value, Class<?> returnType) throws Exception {// 写回响应
+        MediaType mediaType = getAcceptMediaType(request, returnType);// 获取mediaType
         writeResult(nettyHttpResponse, url, value, returnType, mediaType);
     }
 
 
     public static void writeResult(NettyHttpResponse nettyHttpResponse, URL url, Object value, Class<?> returnType, MediaType mediaType) throws Exception {
-        MessageCodecResultPair booleanMediaTypePair = HttpMessageCodecManager.httpMessageEncode(nettyHttpResponse.getOutputStream(), value, url, mediaType, returnType);
+        MessageCodecResultPair booleanMediaTypePair = HttpMessageCodecManager.httpMessageEncode(nettyHttpResponse.getOutputStream(), value, url, mediaType, returnType);// 对响应结果进行编码
         // reset raw response result
         nettyHttpResponse.setResponseBody(value);
         nettyHttpResponse.addOutputHeaders(RestHeaderEnum.CONTENT_TYPE.getHeader(), booleanMediaTypePair.getMediaType().value);
